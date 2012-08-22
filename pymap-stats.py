@@ -1,6 +1,5 @@
 import imaplib
 import email
-import pprint
 import time
 import operator
 import getpass
@@ -13,10 +12,6 @@ parser.add_argument("-s", "--server", help="The IMAP server to connect to (defau
 parser.add_argument("-p", "--persist", action="store_true", help="Use to persist emails for later analysis. Will speed up future runs by avoiding calls to the IMAP server.")
 args = parser.parse_args()
 
-# TODO: check for valid --num_emails
-# TODO: check for valid --server
-# TODO: use persist flag to store emails in local file system, maybe get number of files and estimated space to give [Y/n]
-# TODO: catch imap server unknown error
 
 imap_server = args.server
 username = raw_input("Email address: ")
@@ -49,7 +44,6 @@ def write_all_from(from_dict):
 def connect(retries=5, delay=3):
     while True:
         try:
-            # imap_server = 'imap.gmail.com'
             mail = imaplib.IMAP4_SSL(imap_server)
             mail.login(username, password)
             return mail
@@ -59,10 +53,6 @@ def connect(retries=5, delay=3):
                 time.sleep(delay)
             else:
                 raise
-
-# check for home_dir directory 
-# create if not available
-
 
 start_millis = int(round(time.time() * 1000))
 
@@ -93,8 +83,6 @@ while True:
 						raw_email = email_file.read()
 			else:
 				result, email_pieces = mail.uid('fetch', mail_id, '(RFC822)')
-				# pp = pprint.PrettyPrinter(indent=4)
-				# pp.pprint(email_pieces)
 				raw_email = email_pieces[0][1]
 			
 			parsed_message = email.message_from_string(raw_email)
@@ -106,9 +94,6 @@ while True:
 			email_from = parsed_message["From"]
 			email_to = parsed_message["To"]
 			print email_to
-
-			# print "Sender: %s" % parsed_message["Sender"]
-			# print "From: %s" % email_from
 
 			email_from_tuple = email.utils.parseaddr(email_from)
 			parsed_from_addr = ""
